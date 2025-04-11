@@ -5,5 +5,5 @@ RUN curl -LO "https://dl.k8s.io/release/$(curl -sL https://dl.k8s.io/release/sta
     chmod +x kubectl && mv kubectl /usr/local/bin/
 
 # Install kind
-RUN curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.22.0/kind-linux-amd64 && \
-    chmod +x ./kind && mv ./kind /usr/local/bin/kind
+RUN curl -Lo kind https://kind.sigs.k8s.io/dl/v0.22.0/kind-linux-amd64 && \
+    chmod +x kind && mv kind /usr/local/bin/
