@@ -3,8 +3,6 @@ Training the various methods for using Kubernetes and building up to a working p
 
 ## Learning Path
 
-# Creating the directory structure:
-
 ### 1. Prerequisites
 - Basic understanding of containers and Docker
 - Familiarity with command-line operations
