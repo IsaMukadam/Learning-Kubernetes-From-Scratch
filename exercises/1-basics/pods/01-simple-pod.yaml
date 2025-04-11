@@ -1,0 +1,22 @@
+# Basic Pod Definition
+# This example demonstrates the fundamental structure of a Kubernetes Pod
+apiVersion: v1          # Kubernetes API version
+kind: Pod               # Type of resource we're creating
+metadata:              
+  name: nginx-pod       # Name of the pod
+  labels:              # Labels are key/value pairs for identifying your pod
+    app: web
+    tier: frontend
+spec:                  # Specification of the desired behavior of the pod
+  containers:          # List of containers to run in the pod
+  - name: nginx        # Name of the container
+    image: nginx:1.14  # Docker image to use
+    ports:            # List of ports to expose
+    - containerPort: 80  # Port that the container listens on
+    resources:        # Resource limits and requests
+      requests:       # Minimum resources needed
+        memory: "64Mi"
+        cpu: "250m"
+      limits:         # Maximum resources allowed
+        memory: "128Mi"
+        cpu: "500m"
