@@ -1,13 +1,9 @@
 FROM gitpod/workspace-full
 
-# Install additional tools
-USER root
+# Install kubectl
+RUN curl -LO "https://dl.k8s.io/release/$(curl -sL https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && \
+    chmod +x kubectl && mv kubectl /usr/local/bin/
 
-# Install Docker
-RUN curl -fsSL https://get.docker.com | sh
-
-# Add user to docker group
-RUN usermod -aG docker gitpod
-
-# Reset user to gitpod
-USER gitpod
+# Install kind
+RUN curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.22.0/kind-linux-amd64 && \
+    chmod +x ./kind && mv ./kind /usr/local/bin/kind
