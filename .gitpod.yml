@@ -2,9 +2,7 @@ image:
   file: .gitpod.Dockerfile
 
 tasks:
-  - name: Start kind cluster
-    init: |
-      kind create cluster
+  - name: Test minikube and kubectl install
     command: |
-      kubectl cluster-info
+      docker --version
       kubectl get nodes
