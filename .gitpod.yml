@@ -1,8 +1,13 @@
 image:
   file: .gitpod.Dockerfile
 
+features:
+  docker-in-docker: true
+
 tasks:
-  - name: Test minikube and kubectl install
+  - init: |
+      dockerd-entrypoint.sh & sleep 10
+      kind create cluster
     command: |
-      docker --version
+      kubectl cluster-info
       kubectl get nodes
