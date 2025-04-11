@@ -1,13 +1,13 @@
 image:
   file: .gitpod.Dockerfile
 
-features:
-  docker-in-docker: true
-
 tasks:
-  - init: |
-      dockerd-entrypoint.sh & sleep 10
+  - name: Setup Kubernetes tools
+    init: |
+      echo "Starting Docker service..."
+      sudo service docker start
+      echo "Docker service started!"
+    command: |
       kind create cluster
-  - command: |
       kubectl cluster-info
       kubectl get nodes
