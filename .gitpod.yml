@@ -8,6 +8,6 @@ tasks:
   - init: |
       dockerd-entrypoint.sh & sleep 10
       kind create cluster
-    command: |
+  - command: |
       kubectl cluster-info
       kubectl get nodes
