@@ -1,13 +1,1 @@
-image:
-  file: .gitpod.Dockerfile
 
-tasks:
-  - name: Setup Kubernetes tools
-    init: |
-      echo "Starting Docker service..."
-      sudo service docker start
-      echo "Docker service started!"
-    command: |
-      kind create cluster
-      kubectl cluster-info
-      kubectl get nodes
