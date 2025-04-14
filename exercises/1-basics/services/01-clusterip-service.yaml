@@ -1,0 +1,15 @@
+# ClusterIP Service Definition
+# This service exposes the nginx pod within the cluster
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service-internal
+spec:
+  type: ClusterIP          # Default service type for internal cluster access
+  selector:                # Select pods with these labels
+    app: web              # Match our pod's labels
+    tier: frontend
+  ports:
+    - protocol: TCP
+      port: 80            # Port the service listens on
+      targetPort: 80      # Port to forward to in the pod
