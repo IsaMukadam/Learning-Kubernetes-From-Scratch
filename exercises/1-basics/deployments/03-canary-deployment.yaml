@@ -1,0 +1,66 @@
+# Canary Deployment Strategy Example
+---
+# Stable Deployment (Main Production Version)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-stable
+  labels:
+    app: nginx
+    version: stable
+spec:
+  replicas: 9  # 90% of traffic
+  selector:
+    matchLabels:
+      app: nginx
+      version: stable
+  template:
+    metadata:
+      labels:
+        app: nginx
+        version: stable
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.14
+        ports:
+        - containerPort: 80
+---
+# Canary Deployment (New Version)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-canary
+  labels:
+    app: nginx
+    version: canary
+spec:
+  replicas: 1  # 10% of traffic
+  selector:
+    matchLabels:
+      app: nginx
+      version: canary
+  template:
+    metadata:
+      labels:
+        app: nginx
+        version: canary
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.16
+        ports:
+        - containerPort: 80
+---
+# Service that routes to both stable and canary
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service-canary
+spec:
+  selector:
+    app: nginx  # Will select both stable and canary pods
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
