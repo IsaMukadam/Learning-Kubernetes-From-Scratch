@@ -59,8 +59,9 @@ metadata:
   name: nginx-service-canary
 spec:
   selector:
-    app: nginx  # Will select both stable and canary pods
+    app: nginx  # This will select all nginx pods
   ports:
     - protocol: TCP
       port: 80
       targetPort: 80
+  sessionAffinity: None
