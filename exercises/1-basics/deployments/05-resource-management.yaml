@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-resources
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx-resources
+  template:
+    metadata:
+      labels:
+        app: nginx-resources
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.14
+        resources:
+          requests:            # Minimum resources needed
+            memory: "64Mi"     # 64 Mebibytes of memory
+            cpu: "250m"        # 250 millicores = 0.25 CPU cores
+          limits:             # Maximum resources allowed
+            memory: "128Mi"    # 128 Mebibytes of memory
+            cpu: "500m"        # 500 millicores = 0.5 CPU cores
+        ports:
+        - containerPort: 80
