@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-configured
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-configured
+  template:
+    metadata:
+      labels:
+        app: nginx-configured
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.14
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: config-volume
+          mountPath: /usr/share/nginx/html/
+        env:
+        - name: SECRET_MESSAGE
+          valueFrom:
+            secretKeyRef:
+              name: nginx-secret
+              key: message
+      volumes:
+      - name: config-volume
+        configMap:
+          name: nginx-config

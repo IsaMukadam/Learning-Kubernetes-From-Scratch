@@ -48,18 +48,33 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: nginx:1.16
+        image: nginxdemos/hello
         ports:
         - containerPort: 80
+
 ---
-# Service that routes to both stable and canary
+# Service that routes to both stable traffic to stable deployment
 apiVersion: v1
 kind: Service
 metadata:
-  name: nginx-service-canary
+  name: nginx-stable-service
 spec:
   selector:
-    app: nginx  # This will select all nginx pods
+    app: nginx
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  sessionAffinity: None
+---
+# Service that routes canary traffic to the canary deployment
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-canary-service
+spec:
+  selector:
+    app: nginx
   ports:
     - protocol: TCP
       port: 80

@@ -12,16 +12,4 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 80
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: nginx-service-canary
-spec:
-  selector:
-    app: nginx
-    version: stable  # Initially route to stable version
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 80
+  type: ClusterIP  # Default service type, accessible only within the cluster
