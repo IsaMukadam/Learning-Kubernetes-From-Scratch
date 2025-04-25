@@ -1,0 +1,15 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: backup-job
+spec:
+  schedule: "0 2 * * *"  # Run at 2 AM every day
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: backup
+            image: busybox
+            command: ["/bin/sh", "-c", "echo Performing backup $(date)"]
+          restartPolicy: OnFailureexercises/1-basics/jobs/02-cronjob.yaml
