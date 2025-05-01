@@ -28,12 +28,18 @@ Training the various methods for using Kubernetes and building up to a working p
    - Work with deployments
    - Expose applications using services
    - Use configuration maps and secrets
-
-2. **Intermediate Concepts**
    - Resource management and scaling
    - Health checks and probes
-   - Rolling updates and rollbacks
    - Storage and persistence
+
+2. **Intermediate Concepts**
+   - Rolling updates and rollbacks
+   - Horizontal Pod Autoscaling (HPA)
+   - Pod Disruption Budgets (PDB)
+   - Init Containers and Multi-container Patterns
+   - Pod Affinity and Anti-affinity
+   - Custom Resource Definitions (CRDs)
+   - Service Mesh basics
 
 3. **Advanced Topics**
    - StatefulSets
