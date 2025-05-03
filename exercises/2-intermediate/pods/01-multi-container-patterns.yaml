@@ -20,9 +20,11 @@ spec:
     volumeMounts:
     - name: shared-data
       mountPath: /usr/share/nginx/html
+    - name: nginx-logs
+      mountPath: /var/log/nginx
   - name: logger-sidecar
     image: busybox:1.28
-    command: ['sh', '-c', 'tail -F /var/log/nginx/access.log']
+    command: ['sh', '-c', 'while true; do if [ -f /var/log/nginx/access.log ]; then tail -F /var/log/nginx/access.log; else sleep 1; fi; done']
     volumeMounts:
     - name: nginx-logs
       mountPath: /var/log/nginx

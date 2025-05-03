@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: weighted-example
+  labels:
+    app: weighted-demo
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: weighted-demo
+  template:
+    metadata:
+      labels:
+        app: weighted-demo
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100    # High priority rule
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - weighted-demo
+              topologyKey: "kubernetes.io/hostname"
+          - weight: 70     # Medium priority rule
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - weighted-demo
+              topologyKey: "kubernetes.io/arch"
+      containers:
+      - name: nginx
+        image: nginx:1.14
