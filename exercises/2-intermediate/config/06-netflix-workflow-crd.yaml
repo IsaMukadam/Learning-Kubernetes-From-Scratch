@@ -1,0 +1,95 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: workflows.conductor.netflix.com
+spec:
+  group: conductor.netflix.com
+  names:
+    kind: Workflow
+    plural: workflows
+    singular: workflow
+    shortNames:
+      - wf
+  scope: Namespaced
+  versions:
+    - name: v1
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          required: ["spec"]
+          properties:
+            spec:
+              type: object
+              required: ["name", "tasks"]
+              properties:
+                name:
+                  type: string
+                  description: "Name of the workflow"
+                  pattern: "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$"
+                description:
+                  type: string
+                  description: "Description of what the workflow does"
+                version:
+                  type: integer
+                  description: "Workflow definition version"
+                  default: 1
+                ownerEmail:
+                  type: string
+                  description: "Email of the workflow owner"
+                  pattern: "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"
+                timeoutPolicy:
+                  type: string
+                  description: "What to do when workflow times out"
+                  enum: ["TIME_OUT", "ALERT_ONLY", "RETRY"]
+                  default: "ALERT_ONLY"
+                timeoutSeconds:
+                  type: integer
+                  description: "Timeout in seconds"
+                  minimum: 0
+                  default: 3600
+                tasks:
+                  type: array
+                  description: "List of tasks in the workflow"
+                  minItems: 1
+                  items:
+                    type: object
+                    required: ["name", "taskType"]
+                    properties:
+                      name:
+                        type: string
+                        description: "Name of the task"
+                        pattern: "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$"
+                      taskType:
+                        type: string
+                        description: "Type of the task"
+                        enum:
+                          - "SIMPLE"
+                          - "DYNAMIC"
+                          - "FORK_JOIN"
+                          - "HTTP"
+                          - "LAMBDA"
+                      retryCount:
+                        type: integer
+                        description: "Number of retries"
+                        minimum: 0
+                        default: 3
+                      retryLogic:
+                        type: string
+                        description: "Retry logic to use"
+                        enum: ["FIXED", "EXPONENTIAL_BACKOFF"]
+                        default: "FIXED"
+                      timeoutSeconds:
+                        type: integer
+                        description: "Task timeout in seconds"
+                        minimum: 0
+                        default: 300
+                      inputParameters:
+                        type: object
+                        description: "Input parameters for the task"
+                        x-kubernetes-preserve-unknown-fields: true
+                      optional:
+                        type: boolean
+                        description: "Is this task optional"
+                        default: false

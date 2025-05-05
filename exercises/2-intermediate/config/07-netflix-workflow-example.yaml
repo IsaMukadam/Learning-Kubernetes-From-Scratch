@@ -1,0 +1,130 @@
+apiVersion: conductor.netflix.com/v1
+kind: Workflow
+metadata:
+  name: video-processing
+spec:
+  name: video-transcode-workflow
+  description: "Workflow for processing and transcoding uploaded video content"
+  version: 1
+  ownerEmail: "media-team@netflix.com"
+  timeoutPolicy: "ALERT_ONLY"
+  timeoutSeconds: 7200  # 2 hours
+  tasks:
+    - name: validate-media
+      taskType: "HTTP"
+      retryCount: 3
+      timeoutSeconds: 60
+      inputParameters:
+        http:
+          uri: "http://media-validator:8080/validate"
+          method: "POST"
+          contentType: "application/json"
+          
+    - name: extract-metadata
+      taskType: "SIMPLE"
+      retryCount: 2
+      inputParameters:
+        mediaPath: "${workflow.input.mediaPath}"
+        outputPath: "/tmp/metadata"
+        
+    - name: transcode-variants
+      taskType: "FORK_JOIN"
+      inputParameters:
+        forkTasks:
+          - name: transcode-4k
+            taskType: "LAMBDA"
+            inputParameters:
+              quality: "4k"
+              bitrate: "15000k"
+          - name: transcode-1080p
+            taskType: "LAMBDA"
+            inputParameters:
+              quality: "1080p"
+              bitrate: "5000k"
+          - name: transcode-720p
+            taskType: "LAMBDA"
+            inputParameters:
+              quality: "720p"
+              bitrate: "2500k"
+              
+    - name: create-thumbnails
+      taskType: "SIMPLE"
+      optional: true
+      timeoutSeconds: 300
+      inputParameters:
+        sourceFile: "${workflow.input.mediaPath}"
+        intervals: [0, 10, 30, 60]
+        
+    - name: update-catalog
+      taskType: "HTTP"
+      retryLogic: "EXPONENTIAL_BACKOFF"
+      retryCount: 5
+      inputParameters:
+        http:
+          uri: "http://catalog-service:8080/update"
+          method: "PUT"
+          body:
+            mediaId: "${workflow.input.mediaId}"
+            metadata: "${extract-metadata.output.metadata}"
+            variants: "${transcode-variants.output.locations}"
+            thumbnails: "${create-thumbnails.output.thumbnails}"
+
+---
+apiVersion: netflix.com/v1
+kind: WorkflowTemplate
+metadata:
+  name: data-processing-pipeline
+spec:
+  version: 1
+  description: "Data processing pipeline with K8s jobs and metrics collection"
+  parameters:
+    - name: inputPath
+      description: "Input data path"
+      type: string
+      required: true
+    - name: outputPath
+      description: "Output data path"
+      type: string
+      required: true
+    - name: processingImage
+      description: "Docker image for data processing"
+      type: string
+      default: "data-processor:latest"
+
+  tasks:
+    - name: validate-data
+      taskType: KUBERNETES_JOB
+      timeoutSeconds: 300
+      retryCount: 2
+      retryLogic: EXPONENTIAL_BACKOFF
+      inputTemplate:
+        job:
+          image: "${processingImage}"
+          command: ["python", "validate.py", "${inputPath}"]
+          env:
+            LOG_LEVEL: "INFO"
+
+    - name: process-data
+      taskType: KUBERNETES_JOB
+      timeoutSeconds: 1800
+      retryCount: 1
+      dependsOn: ["validate-data"]
+      inputTemplate:
+        job:
+          image: "${processingImage}"
+          command: ["python", "process.py", "${inputPath}", "${outputPath}"]
+          env:
+            BATCH_SIZE: "1000"
+            NUM_WORKERS: "4"
+
+    - name: generate-report
+      taskType: KUBERNETES_JOB
+      timeoutSeconds: 600
+      optional: true
+      dependsOn: ["process-data"]
+      inputTemplate:
+        job:
+          image: "${processingImage}"
+          command: ["python", "report.py", "${outputPath}"]
+          env:
+            REPORT_FORMAT: "PDF"

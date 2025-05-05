@@ -1,0 +1,95 @@
+# Example 1: Invalid game name
+apiVersion: gaming.example.com/v1
+kind: Game
+metadata:
+  name: csgo-server
+spec:
+  # ERROR: gameName must be one of: minecraft, terraria, valheim, factorio
+  gameName: "csgo"
+  serverName: "My CS:GO Server"
+  players: 20
+  port: 27015
+---
+# Example 2: Invalid version format
+apiVersion: gaming.example.com/v1
+kind: Game
+metadata:
+  name: minecraft-wrong-version
+spec:
+  gameName: "minecraft"
+  # ERROR: gameVersion must match pattern ^v?\d+\.\d+\.\d+$
+  gameVersion: "latest"
+  serverName: "Bug World"
+  players: 10
+  port: 25565
+---
+# Example 3: Invalid server name
+apiVersion: gaming.example.com/v1
+kind: Game
+metadata:
+  name: minecraft-bad-name
+spec:
+  gameName: "minecraft"
+  # ERROR: serverName contains invalid characters (@ and !)
+  serverName: "My@Awesome!Server"
+  players: 15
+  port: 25565
+---
+# Example 4: Invalid numeric ranges
+apiVersion: gaming.example.com/v1
+kind: Game
+metadata:
+  name: minecraft-invalid-numbers
+spec:
+  gameName: "minecraft"
+  serverName: "Too Many Players"
+  # ERROR: players must be between 1 and 100
+  players: 500
+  # ERROR: port must be between 1024 and 65535
+  port: 80
+---
+# Example 5: Invalid mode and missing required field
+apiVersion: gaming.example.com/v1
+kind: Game
+metadata:
+  name: minecraft-invalid-mode
+spec:
+  gameName: "minecraft"
+  # ERROR: Required field 'serverName' is missing
+  players: 20
+  port: 25565
+  # ERROR: mode must be one of: survival, creative, adventure
+  mode: "pvp"
+  # ERROR: difficulty must be one of: peaceful, easy, normal, hard
+  difficulty: "extreme"
+---
+# Example 6: Invalid string lengths
+apiVersion: gaming.example.com/v1
+kind: Game
+metadata:
+  name: minecraft-name-length
+spec:
+  gameName: "minecraft"
+  # ERROR: serverName must be between 3 and 50 characters
+  serverName: "AB"
+  players: 20
+  port: 25565
+---
+# Example 7: Multiple validation failures
+apiVersion: gaming.example.com/v1
+kind: Game
+metadata:
+  name: multiple-errors
+spec:
+  # ERROR: Invalid game name
+  gameName: "roblox"
+  # ERROR: Invalid version format
+  gameVersion: "v1.0"
+  # ERROR: Server name too long (over 50 characters)
+  serverName: "This is a really really really really really really long server name that exceeds the maximum length"
+  # ERROR: Players below minimum
+  players: 0
+  # ERROR: Port above maximum
+  port: 70000
+  # ERROR: Invalid mode
+  mode: "battle-royale"

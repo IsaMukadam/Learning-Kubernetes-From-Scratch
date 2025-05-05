@@ -6,3 +6,16 @@ spec:
   image: nginx:1.14
   port: 80
   replicas: 3
+  domains:
+    - myapp.example.com
+    - www.myapp.example.com
+  ssl:
+    enabled: true
+    secretName: myapp-tls-secret
+  resources:
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+    requests:
+      cpu: "250m"
+      memory: "256Mi"

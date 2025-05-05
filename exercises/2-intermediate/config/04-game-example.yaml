@@ -1,0 +1,26 @@
+apiVersion: gaming.example.com/v1
+kind: Game
+metadata:
+  name: minecraft-survival
+spec:
+  # Must be one of: minecraft, terraria, valheim, factorio
+  gameName: minecraft
+  
+  # Must match semver pattern (e.g., 1.2.3)
+  gameVersion: "1.19.4"
+  
+  # Must be 3-50 chars, alphanumeric with spaces/dots/dashes/underscores
+  serverName: "Awesome Survival World"
+  
+  # Must be between 1-100
+  players: 20
+  
+  # Must be between 1024-65535
+  port: 25565
+  
+  # Must be one of: survival, creative, adventure
+  mode: "survival"
+  
+  # Must be one of: peaceful, easy, normal, hard
+  # Will default to "normal" if not specified
+  difficulty: "hard"
