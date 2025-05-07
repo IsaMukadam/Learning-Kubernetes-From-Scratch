@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
       - name: ratings
-        image: isadeveloper17/ratings-v2-custom
+        image: docker.io/istio/examples-bookinfo-ratings-v2:1.16.2
         ports:
         - containerPort: 9080
         securityContext:
