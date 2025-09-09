@@ -92,20 +92,18 @@ kubectl get webapps
 Basic service mesh implementation using Istio patterns.
 
 ### Key Components:
-- `01-service-mesh.yaml`: Deployment for `ratings-v1` with sidecar injection.
-- `ratings-v2.yaml`: Deployment for `ratings-v2` (if traffic is split).
-- `destination-rule.yaml`: Defines routing subsets.
-- `02-virtual-service.yaml`: Traffic management rules (90/10 split between v1 and v2).
+- `01-service-mesh.yaml`: Deployment with Istio integration
+- `02-virtual-service.yaml`: Traffic management rules
 
 ### Features:
 - Automatic sidecar injection
 - Traffic splitting (90/10)
-- Version-based routing using `DestinationRule`
-- Security context configuration (`runAsUser: 1000`)
+- Version-based routing
+- Security context configuration
 
 ### Prerequisites:
 - Istio must be installed in the cluster
-- Sidecar injection must be enabled in the namespace
+- Sidecar injection enabled in namespace
 
 ## Best Practices
 

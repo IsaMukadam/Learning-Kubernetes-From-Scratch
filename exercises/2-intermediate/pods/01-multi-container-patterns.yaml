@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: web-app
+  labels:
+    app: web
+spec:
+  initContainers:
+  - name: content-init
+    image: busybox:1.28
+    command: ['sh', '-c', 'echo "Initial content from init container" > /work-dir/index.html']
+    volumeMounts:
+    - name: shared-data
+      mountPath: /work-dir
+  containers:
+  - name: nginx
+    image: nginx:1.14
+    ports:
+    - containerPort: 80
+    volumeMounts:
+    - name: shared-data
+      mountPath: /usr/share/nginx/html
+  - name: logger-sidecar
+    image: busybox:1.28
+    command: ['sh', '-c', 'tail -F /var/log/nginx/access.log']
+    volumeMounts:
+    - name: nginx-logs
+      mountPath: /var/log/nginx
+  volumes:
+  - name: shared-data
+    emptyDir: {}
+  - name: nginx-logs
+    emptyDir: {}
