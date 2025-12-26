@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: database-backup
+spec:
+  template:
+    spec:
+      containers:
+      - name: backup
+        image: mysql:5.7
+        command: ["mysqldump", "--host=mysql", "--user=root", "--password=$(MYSQL_ROOT_PASSWORD)", "mydb"]
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: password
+      restartPolicy: Never
+  backoffLimit: 4
